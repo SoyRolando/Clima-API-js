@@ -3,21 +3,51 @@
 const container = document.querySelector('.container');
 const resultado = document.querySelector('#resultado');
 const formulario = document.querySelector('#formulario');
+const optionPais = document.querySelector('#pais');
 
 //! addEventListeners
 
 window.addEventListener('load', () => {
+     cargarPaises();
     formulario.addEventListener('submit', buscarClima);
 })
 
 //! Funciones
 
+function cargarPaises() {
+    const url = 'lista-paises/paises.json';
+    fetch(url)
+    .then(respuesta => respuesta.json())
+    .then(paises => mostrarPaises(paises))
+    .catch(error => console.log(error))
+    
+}
+
+function mostrarPaises(paises){
+    paises.forEach(pais => {
+
+        const {nombre, iso2} = pais;
+        const option = document.createElement('OPTION');
+        option.value = iso2;
+        /**
+         * El .json() devuelve los paies con doble comilla, por lo tanto uso .substr()
+         * y se le pasa la posicion de donde empieza a mantener caracteres hasta la posicion que tiene
+         * que terminar. Los caracteres en la cadena de string empiezan en cero y como argumento de 'substr()' cada 
+         * parametro es independiente del otro 
+         */
+        const nombreNew = nombre.substr(1, nombre.length - 2); 
+
+        option.textContent = nombreNew;
+        optionPais.appendChild(option);
+    });
+}
+
 function buscarClima(e) {
     e.preventDefault();
 
     //? Validar
-    const ciudad = document.querySelector('#ciudad').value;
-    const pais = document.querySelector('#pais').value;
+    const ciudad = document.querySelector('#ciudad').value.trim();
+    const pais = document.querySelector('#pais').value.trim();
 
     if (ciudad === '' || pais === '') {
         mostrarError('Ambos campos son obligatorios');
